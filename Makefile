@@ -6,7 +6,7 @@
 #    By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/17 18:36:33 by tlepeche          #+#    #+#              #
-#    Updated: 2016/10/17 18:51:41 by tlepeche         ###   ########.fr        #
+#    Updated: 2016/10/20 20:08:12 by tlepeche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,10 @@ NAME = malloc
 
 SRC =	test.c \
 		malloc.c \
+		malloc_tools.c \
 		free.c \
+		show_memory.c \
+		statics.c \
 
 SRCDIR = src/
 
@@ -24,7 +27,7 @@ OBJ = $(SRC:%.c=$(OBJDIR)%.o)
 
 CC = clang
 
-INC = -I ./includes
+INC = -I ./includes -I libft
 
 LIB = -L libft -lft
 
@@ -34,10 +37,10 @@ FS = -fsanitize=address
 
 C_FLAGS= -Wall -Werror -Wextra
 
-all: $(NAME)
+all: lft $(NAME)
 
 $(NAME): $(OBJ)
-	@$(CC) $(C_FLAGS) -o $(NAME) $^
+	@$(CC) $(C_FLAGS) -o $(NAME) $(LIB) $^
 	@echo ""
 	@echo $(PX_STR) : $(EX_STR)
 	@echo ""
@@ -55,7 +58,7 @@ clean:
 	@echo $(RM_STR) objects
 
 fclean: clean
-#	@make fclean -C libft
+	@make fclean -C libft
 	@$(RM) $(NAME)
 	@echo $(RM_STR) $(NAME)
 

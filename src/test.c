@@ -1,5 +1,4 @@
 #include <test.h>
-#include <stdlib.h> /// pour atoi
 
 void	print_verif(t_block *mem)
 {
@@ -15,15 +14,6 @@ void	print_verif(t_block *mem)
 	printf("\n");
 }
 
-t_block	*get_static()
-{
-	static t_block *mem_block = NULL;
-
-	if (mem_block == NULL)
-		mem_block = create_new_block();
-	return (mem_block);
-}
-
 int main(int ac, char **av)
 {
 	int		nb;
@@ -37,12 +27,11 @@ int main(int ac, char **av)
 	if (av[1])
 		nb = atoi(av[1]);
 	else
-		nb = 5;
+		nb = 17;
 	str = (char*)myMalloc(sizeof(char)*(nb + 1));	
-	str2 = (char*)myMalloc(sizeof(char)*(nb + 1));	
-	myFree(str2);
-	str3 = (char*)myMalloc(sizeof(char)*(nb + 1));	
-	str4 = (char*)myMalloc(sizeof(char)*(nb + 1));	
+	str2 = (char*)myMalloc(sizeof(char)*(nb *4));	
+	str3 = (char*)myMalloc(sizeof(char)*(nb *52));	
+	str4 = (char*)myMalloc(sizeof(char)*(14000 ));	
 	if (str == NULL)
 		printf("null\n");
 	else
@@ -58,14 +47,32 @@ int main(int ac, char **av)
 		str2[i] = '\0';
 		str3[i] = '\0';
 		str4[i] = '\0';
-		printf("%p  --> %s\n", str, str);
-		printf("%p  --> %s\n", str2, str2);
-		printf("%p  --> %s\n", str3, str3);
-		printf("%p  --> %s\n", str4, str4);
+		ft_putstr("0x");
+		ft_putnbr_base((long int)str, 16);
+		ft_putstr(" --> ");
+		ft_putendl(str);
+
+		ft_putstr("0x");
+		ft_putnbr_base((long int)str2, 16);
+		ft_putstr(" --> ");
+		ft_putendl(str2);
+
+		ft_putstr("0x");
+		ft_putnbr_base((long int)str3, 16);
+		ft_putstr(" --> ");
+		ft_putendl(str3);
+
+		ft_putstr("0x");
+		ft_putnbr_base((long int)str4, 16);
+		ft_putstr(" --> ");
+		ft_putendl(str4);
+		ft_putchar('\n');
 	}
+	show_alloc_mem();
+//	print_verif(get_static());
+/*	myFree(str);
 	myFree(str2);
 	myFree(str3);
-	myFree(str4);
-	printf("pagesize = %d\n", getpagesize());
+	myFree(str4);*/
 	return (0);
 }

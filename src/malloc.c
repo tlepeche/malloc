@@ -1,115 +1,124 @@
-#include <stdio.h>
 #include <test.h>
 
-t_block	*create_new_block(void)
+void	*check_chain(t_block **block, size_t size)
 {
-	t_block *mem_block;
-	mem_block = (t_block *)mmap(0, sizeof(t_block), PROT_READ | PROT_WRITE,
-			MAP_ANON | MAP_PRIVATE, -1, 0);
-	if (mem_block == MAP_FAILED)
-		return (NULL);
-	mem_block->ptr = NULL;
-	mem_block->is_free = 1;
-	mem_block->size = 0;
-	mem_block->next = NULL;
-	return (mem_block);
+	while (*block && (*block)->ptr)
+	{
+		if ((*block)->is_free && (*block)->size >= size)
+		{
+			(*block)->is_free = 0;
+			split_memory(*block, size, (*block)->type);
+			print_verif(get_tiny_static());
+			return ((*block)->ptr);
+		}
+		*block = (*block)->next;
+	}
+	return (NULL);
 }
 
-void	create_new_split_block(t_block *mem, size_t tmp_size, size_t size)
+void	*finish_malloc(t_block * block, size_t size)
 {
-	t_block *tmp_next;
+	if (block->ptr == MAP_FAILED)
+	{
+		munmap(block, sizeof(t_block *));
+		return (NULL);
+	}
+	else
+		block->is_free = 0;
+	split_memory(block, size, block->type);
+	print_verif(block);
+	return (block);
+}	
+
+void	*malloc_tiny(size_t size)
+{
+	t_block *tiny;
 	t_block *tmp;
 
-	mem->size = tmp_size;
-	tmp = mem;
-	tmp_next = (t_block *)mmap(0, sizeof(t_block), PROT_READ | PROT_WRITE,
+	tiny = get_tiny_static();
+	tmp = tiny;
+	if (check_chain(&tmp, size))
+		return (tmp->ptr);
+	if (!tmp)
+	{
+		tiny = get_tiny_static();
+		while (tiny->next)
+			tiny = tiny->next;
+		tiny->next = create_new_block(TINY);
+		tiny = tiny->next;
+	}
+	tiny->ptr = mmap(0, getpagesize() / 64, PROT_READ | PROT_WRITE,
 			MAP_ANON | MAP_PRIVATE, -1, 0);
-	tmp_next->ptr = mem->ptr + tmp_size;
-	tmp_next->size = size - tmp_size;
-	tmp_next->is_free = 1;
-	tmp_next->next = mem->next;
-	mem->next = tmp_next;
+	tiny->size = (size_t)(getpagesize() / 64);
+	tiny = finish_malloc(tiny, size);
+	if (tiny)
+		return (tiny->ptr);
+	else
+		return (NULL);
 }
 
-size_t	find_mem_size(size_t mem_size, size_t size)
+void	*malloc_small(size_t size)
 {
-	size_t res;
+	t_block *small;
+	t_block *tmp;
 
-	res = 1;
-	while (res < size)
-		res <<= 1;
-	if (res > mem_size)
-		return (-1);
-	return res;
+	small = get_small_static();
+	tmp = small;
+	if (check_chain(&tmp, size))
+		return (tmp->ptr);
+	if (!tmp)
+	{
+		small = get_small_static();
+		while (small->next)
+			small = small->next;
+		small->next = create_new_block(SMALL);
+		small = small->next;
+	}
+	small->ptr = mmap(0, getpagesize() / 16, PROT_READ | PROT_WRITE,
+			MAP_ANON | MAP_PRIVATE, -1, 0);
+	small->size = (size_t)(getpagesize() / 16);
+	small = finish_malloc(small, size);
+	if (small)
+		return (small->ptr);
+	else
+		return (NULL);
 }
 
-void	split_memory(t_block *mem, size_t size)
+void	*malloc_large(size_t size)
 {
-	size_t	tmp_size;
+	t_block *large;
+	t_block *tmp;
 
-	tmp_size = find_mem_size(mem->size, size);
-	if (mem->is_free == 0 && mem->size > size &&
-			tmp_size != 0 && tmp_size < mem->size)
-		create_new_split_block(mem, tmp_size, mem->size);
+	large = get_large_static();
+	tmp = large;
+	if (check_chain(&tmp, size))
+		return (tmp->ptr);
+	if (!tmp)
+	{
+		large = get_large_static();
+		while (large->next)
+			large = large->next;
+		large->next = create_new_block(LARGE);
+		large = large->next;
+	}
+	large->ptr = mmap(0, size, PROT_READ | PROT_WRITE,
+			MAP_ANON | MAP_PRIVATE, -1, 0);
+	large->size = size;
+	large = finish_malloc(large, size);
+	if (large)
+		return (large->ptr);
+	else
+		return (NULL);
 }
 
 void	*myMalloc(size_t size)
 {
-	t_block	*mem;
-	t_block	*tmp;
-
-	if (size == 0 || size > 4096)
+	if (size == 0 || size > getprocesslimit())
 		return (NULL);
-	mem = get_static();
-	tmp = mem;
-	while (tmp && tmp->ptr)
-	{
-		if (tmp->is_free && tmp->size >= size)
-		{
-			tmp->is_free = 0;
-			split_memory(tmp, size);
-			print_verif(mem);
-			return (tmp->ptr);
-		}
-		tmp = tmp->next;
-	}
-	if (!tmp)
-	{
-		tmp = mem;
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = create_new_block();
-		tmp = tmp->next;
-	}
 	if (size <= (size_t)(getpagesize() / 64))
-	{
-		printf("memory allocated : %d\n",getpagesize() / 64);
-		tmp->ptr = mmap(0, getpagesize() / 64, PROT_READ | PROT_WRITE,
-				MAP_ANON | MAP_PRIVATE, -1, 0);
-		tmp->size = (size_t)(getpagesize() / 64);
-	}
-	else if (size <= (size_t)(getpagesize() / 16))
-	{
-		printf("memory allocated : %d\n", getpagesize() / 16);
-		tmp->ptr = mmap(0, getpagesize() / 16, PROT_READ | PROT_WRITE,
-				MAP_ANON | MAP_PRIVATE, -1, 0);
-		tmp->size = (size_t)(getpagesize() / 16);
-	}
+		return (malloc_tiny(size));
+	if (size <= (size_t)(getpagesize() / 16))
+		return (malloc_small(size));
 	else
-	{
-		printf("memory allocated : %zu\n",size);
-		tmp->ptr = mmap(0, size, PROT_READ | PROT_WRITE,
-				MAP_ANON | MAP_PRIVATE, -1, 0);
-		tmp->size = size;
-	}
-	if (tmp->ptr == MAP_FAILED)
-	{
-		munmap(tmp, sizeof(t_block *));
-		return (NULL);
-	}
-	else
-		tmp->is_free = 0;
-	split_memory(tmp, size);
-	print_verif(mem);
-	return (tmp->ptr);
+		return (malloc_large(size));
 }
