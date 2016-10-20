@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/20 19:27:18 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/20 20:11:32 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	myFree(void *ptr)
 		{
 			if (mem->is_free == 0)
 			{
+				/////UTILISATION DU MUNMAP UNIQUEMENT LORSQUE TOUTE LA CHAINE ALOUER ET VIDE
+				///// A FAIRE : JOINDRE 2 MAILLONS LORSQUILS SONT FREE TOUT LES 2 ET ADJACENT;
 				if (munmap(mem->ptr, mem->size) == -1)
 					printf("munmap error, couldn't free %p addr\n", ptr);
 				else
