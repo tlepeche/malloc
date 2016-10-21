@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/11 17:28:03 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/20 19:17:46 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/21 21:42:36 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,21 @@ typedef struct		s_block
 	struct s_block	*next;
 }					t_block;
 
-t_block				*get_tiny_static(void);
-t_block				*get_small_static(void);
-t_block				*get_large_static(void);
+t_block				*get_tiny_static(t_block *block, int bool);
+t_block				*get_small_static(t_block *block, int bool);
+t_block				*get_large_static(t_block *block, int bool);
 
 t_block				*create_new_block(int type);
 void				create_new_split_block(t_block *mem, size_t tmp_size, size_t size, int type);
 size_t				find_mem_size(size_t mem_size, size_t size);
 void				split_memory(t_block *mem, size_t size, int type);
+void				*check_chain(t_block **block, size_t size);
+
+
 void				*myMalloc(size_t size);
+void				myFree(void	*ptr);
 
 void				print_verif(t_block *mem);
-void				myFree(void	*ptr);
 void				show_alloc_mem(void);
 
 size_t				getprocesslimit(void);

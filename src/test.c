@@ -27,10 +27,10 @@ int main(int ac, char **av)
 	if (av[1])
 		nb = atoi(av[1]);
 	else
-		nb = 17;
+		nb = 2;
 	str = (char*)myMalloc(sizeof(char)*(nb + 1));	
-	str2 = (char*)myMalloc(sizeof(char)*(nb *4));	
-	str3 = (char*)myMalloc(sizeof(char)*(nb *52));	
+	str2 = (char*)myMalloc(sizeof(char)*(nb +14));	
+	str3 = (char*)myMalloc(sizeof(char)*(3054));	
 	str4 = (char*)myMalloc(sizeof(char)*(14000 ));	
 	if (str == NULL)
 		printf("null\n");
@@ -68,11 +68,29 @@ int main(int ac, char **av)
 		ft_putendl(str4);
 		ft_putchar('\n');
 	}
+
 	show_alloc_mem();
-//	print_verif(get_static());
-/*	myFree(str);
+
+	ft_putchar('\n');
+	myFree(str);
+	printf("free str\n\n");
+	show_alloc_mem();
+
+	ft_putchar('\n');
 	myFree(str2);
+	printf("free str2\n\n");
+	show_alloc_mem();
+	ft_putchar('\n');
+
+	myFree(str4);
+	printf("free str4\n\n");
+	show_alloc_mem();
+	ft_putchar('\n');
+
 	myFree(str3);
-	myFree(str4);*/
+	printf("free str3\n\n");
+	show_alloc_mem();
+	myFree(str3);
+	printf("free str3\n\n");
 	return (0);
 }
