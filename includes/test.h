@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/11 17:28:03 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 15:16:20 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/22 22:51:37 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,10 @@ typedef struct		s_block
 	struct s_block	*next;
 }					t_block;
 
-void				*myMalloc(size_t size);
-void				myFree(void	*ptr);
-void				*myRealloc(void *ptr, size_t size);
+void				*malloc(size_t size);
+void				free(void	*ptr);
+void				*realloc(void *ptr, size_t size);
+void				*calloc(size_t count, size_t size);
 void				show_alloc_mem(void);
 
 t_block				*get_tiny_static(t_block *block, int bool);
@@ -53,7 +54,7 @@ void				defrag(t_block *block);
 void				change_static(t_block *tmp2, t_block *tmp, int type);
 void				free_chain(t_block *block, size_t size_max, int type);
 
-size_t				getprocesslimit(void);
+int					getprocesslimit(size_t);
 void				show_full_mem(void);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 15:03:47 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 15:03:48 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/22 23:29:56 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_block	*find_ptr(void *ptr)
 	return (NULL);
 }
 
-void	*myRealloc(void *ptr, size_t size)
+void	*realloc(void *ptr, size_t size)
 {
 	t_block *block;
 	t_block	*tmp;
@@ -61,9 +61,9 @@ void	*myRealloc(void *ptr, size_t size)
 	}
 	else
 	{
-		new_ptr = myMalloc(size);
-		ft_memcpy(new_ptr, ptr, size);
-		myFree(ptr);
+		new_ptr = malloc(size);
+		new_ptr = memcpy(new_ptr, ptr, block->size);
+		free(ptr);
 		return (new_ptr);
 	}
 }

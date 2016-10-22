@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:45:12 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/21 21:45:13 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/22 23:30:24 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	*malloc_small(size_t size)
 	small = get_small_static(NULL, 2);
 	tmp = small;
 	if (check_chain(&tmp, size))
-		return (tmp->ptr);
+			return (tmp->ptr);
 	if (!tmp)
 	{
 		small = get_small_static(NULL, 0);
@@ -106,9 +106,9 @@ void	*malloc_large(size_t size)
 		return (NULL);
 }
 
-void	*myMalloc(size_t size)
+void	*malloc(size_t size)
 {
-	if (size > getprocesslimit())
+	if (getprocesslimit(size))
 		return (NULL);
 	if (size <= (size_t)(getpagesize() / 128))
 		return (malloc_tiny(size));

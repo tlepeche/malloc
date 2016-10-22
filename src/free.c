@@ -6,11 +6,21 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 15:40:43 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/22 23:31:57 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <test.h>
+
+void	print_error(void *ptr)
+{
+		ft_putstr("malloc: *** error for object ");
+		ft_putstr("0x");
+		ft_putnbr_base((long int)ptr, 16);
+		ft_putendl(": pointer being freed was not allocated");
+		ft_putendl("*** set a breakpoint in malloc_error_break to debug");
+		exit(0);
+}
 
 int		free_tiny(void *ptr)
 {
@@ -19,7 +29,7 @@ int		free_tiny(void *ptr)
 	tiny = get_tiny_static(NULL, 0);
 	while (tiny)
 	{
-		if (tiny->ptr == ptr)
+		if (tiny->ptr >= ptr && ptr < (tiny->ptr + tiny->size))
 		{
 			if (tiny->is_free == 0)
 			{
@@ -29,6 +39,7 @@ int		free_tiny(void *ptr)
 				free_chain(tiny, getpagesize(), TINY);
 				return (1);
 			}
+			print_error(ptr);
 		}
 		tiny = tiny->next;
 	}
@@ -42,7 +53,7 @@ int		free_small(void *ptr)
 	small = get_small_static(NULL, 0);
 	while (small)
 	{
-		if (small->ptr == ptr)
+		if (small->ptr >= ptr && ptr < (small->ptr + small->size))
 		{
 			if (small->is_free == 0)
 			{
@@ -52,6 +63,7 @@ int		free_small(void *ptr)
 				free_chain(small, getpagesize() * 32, SMALL);
 				return (1);
 			}
+			print_error(ptr);
 		}
 		small = small->next;
 	}
@@ -82,7 +94,7 @@ int		free_large(void *ptr)
 	return (0);
 }
 
-void	myFree(void *ptr)
+void	free(void *ptr)
 {
 	if (!ptr)
 		return ;
@@ -92,13 +104,4 @@ void	myFree(void *ptr)
 		return ;
 	else if (free_large(ptr))
 		return ;
-	else
-	{
-		ft_putstr("malloc: *** error for object ");
-		ft_putstr("0x");
-		ft_putnbr_base((long int)ptr, 16);
-		ft_putendl(": pointer being freed was not allocated");
-		ft_putendl("*** set a breakpoint in malloc_error_break to debug");
-		exit(0);
-	}
 }

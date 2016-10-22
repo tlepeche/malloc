@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:38:30 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 15:52:38 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/22 23:31:35 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,33 +58,50 @@ void	new_split_block(t_block *mem, size_t tmp_size, size_t size, int type)
 	mem->next = tmp_next;
 }
 
-/*
-**   size_t	find_mem_size(size_t mem_size, size_t size)
-**   {
-**   size_t res;
-**
-**   res = 1;
-**   while (res < size)
-**  res <<= 1;
-**  if (res > mem_size)
-**  return (-1);
-**  return res;
-**  }
-*/
-
 void	split_memory(t_block *mem, size_t size, int type)
 {
 	if (mem->is_free == 0 && mem->size > size)
 		new_split_block(mem, size, mem->size, type);
 }
 
-size_t	getprocesslimit(void)
+int		getprocesslimit(size_t size)
 {
 	struct rlimit	rlp;
+	t_block			*mem;
+	size_t			mem_lock;
+	int				free;
 
-	if (getrlimit(RLIMIT_DATA, &rlp) == -1)
+	free = 0;
+	mem = get_tiny_static(NULL, 0);
+	mem_lock = 0;
+	while (mem)
+	{
+		if (mem->size > size && mem->is_free && size <= (size_t)(getpagesize() / 128))
+			free = 1;
+		mem_lock += mem->size;
+		mem = mem->next;
+	}
+	mem = get_small_static(NULL, 0);
+	while (mem)
+	{
+		if (mem->size > size && mem->is_free &&
+				size <= (size_t)(getpagesize() / 4) && size > (size_t)(getpagesize() / 128))
+			free = 1;
+		mem_lock += mem->size;
+		mem = mem->next;
+	}
+	mem = get_large_static(NULL, 0);
+	while (mem)
+	{
+		if (mem->size > size && mem->is_free && size > (size_t)(getpagesize() / 4))
+			free = 1;
+		mem_lock += mem->size;
+		mem = mem->next;
+	}
+
+	if (getrlimit(RLIMIT_MEMLOCK, &rlp) == -1)
 		ft_putendl("Call getrlimit failed");
 	else
-		return (rlp.rlim_max);
+		return (mem_lock > rlp.rlim_max);
 	return (0);
 }

@@ -6,21 +6,24 @@
 #    By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/17 18:36:33 by tlepeche          #+#    #+#              #
-#    Updated: 2016/10/22 15:16:42 by tlepeche         ###   ########.fr        #
+#    Updated: 2016/10/22 23:38:03 by tlepeche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = malloc
+ifeq ($(HOSTTYPE),)
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
 
-SRC =	test.c \
-		malloc.c \
+NAME = libft_malloc_$(HOSTTYPE).so
+
+SRC =	malloc.c \
 		malloc_tools.c \
 		free.c \
 		free_tools.c \
 		realloc.c \
+		calloc.c \
 		statics.c \
 		show_memory.c \
-		show_full_memory.c \
 
 SRCDIR = src/
 
@@ -36,14 +39,17 @@ LIB = -L libft -lft
 
 RM = rm -rf
 
-FS = -fsanitize=address
-
 C_FLAGS= -Wall -Werror -Wextra
 
-all: lft $(NAME)
+B_FLAGS= -shared
+
+all: link
+	
+link: lft $(NAME)
+	ln -s $(NAME) libft_malloc.so
 
 $(NAME): $(OBJ)
-	@$(CC) $(C_FLAGS) -o $(NAME) $(LIB) $^
+	@$(CC) $(B_FLAGS) $(INC) -o $(NAME) $(LIB) $^
 	@echo ""
 	@echo $(PX_STR) : $(EX_STR)
 	@echo ""
@@ -63,6 +69,7 @@ clean:
 fclean: clean
 	@make fclean -C libft
 	@$(RM) $(NAME)
+	@rm -f libft_malloc.so
 	@echo $(RM_STR) $(NAME)
 
 re: fclean all
