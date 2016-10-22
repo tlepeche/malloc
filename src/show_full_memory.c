@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 16:38:59 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 15:01:03 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/22 15:45:28 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static inline int		print_chain(t_block *block)
 	res = 0;
 	while (block)
 	{
-		if (block->ptr && block->is_free == 0)
+		if (block->ptr)
 		{
 			ft_putstr("0x");
 			ft_putnbr_base((long int)(block->ptr), 16);
@@ -30,7 +30,10 @@ static inline int		print_chain(t_block *block)
 				ft_putnbr_base((long int)(block->ptr + block->size), 16);
 			ft_putstr(" : ");
 			ft_putnbr(block->size);
-			ft_putendl(" octets");
+			if (block->is_free)
+				ft_putendl(" octets and is free");
+			else
+				ft_putendl(" octets and is not free");
 			res += block->size;
 		}
 		block = block->next;
@@ -63,7 +66,7 @@ static inline void		show_rest_mem(int res)
 	ft_putendl(" octets");
 }
 
-void					show_alloc_mem(void)
+void					show_full_mem(void)
 {
 	t_block *mem;
 	int		res;

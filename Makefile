@@ -6,7 +6,7 @@
 #    By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/17 18:36:33 by tlepeche          #+#    #+#              #
-#    Updated: 2016/10/20 20:08:12 by tlepeche         ###   ########.fr        #
+#    Updated: 2016/10/22 15:16:42 by tlepeche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,11 @@ SRC =	test.c \
 		malloc.c \
 		malloc_tools.c \
 		free.c \
-		show_memory.c \
+		free_tools.c \
+		realloc.c \
 		statics.c \
+		show_memory.c \
+		show_full_memory.c \
 
 SRCDIR = src/
 

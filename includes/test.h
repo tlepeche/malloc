@@ -6,12 +6,12 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/11 17:28:03 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/21 21:42:36 by tlepeche         ###   ########.fr       */
+/*   Updated: 2016/10/22 15:16:20 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TEST_H_
-# define TEST_H_
+#ifndef _TEST_H
+# define _TEST_H
 
 # include <unistd.h>
 # include <sys/mman.h>
@@ -33,23 +33,27 @@ typedef struct		s_block
 	struct s_block	*next;
 }					t_block;
 
+void				*myMalloc(size_t size);
+void				myFree(void	*ptr);
+void				*myRealloc(void *ptr, size_t size);
+void				show_alloc_mem(void);
+
 t_block				*get_tiny_static(t_block *block, int bool);
 t_block				*get_small_static(t_block *block, int bool);
 t_block				*get_large_static(t_block *block, int bool);
 
 t_block				*create_new_block(int type);
-void				create_new_split_block(t_block *mem, size_t tmp_size, size_t size, int type);
 size_t				find_mem_size(size_t mem_size, size_t size);
 void				split_memory(t_block *mem, size_t size, int type);
+
 void				*check_chain(t_block **block, size_t size);
+void				*finish_malloc(t_block *block, size_t size);
 
-
-void				*myMalloc(size_t size);
-void				myFree(void	*ptr);
-
-void				print_verif(t_block *mem);
-void				show_alloc_mem(void);
+void				defrag(t_block *block);
+void				change_static(t_block *tmp2, t_block *tmp, int type);
+void				free_chain(t_block *block, size_t size_max, int type);
 
 size_t				getprocesslimit(void);
+void				show_full_mem(void);
 
 #endif
