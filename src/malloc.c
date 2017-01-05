@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:45:12 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 23:30:24 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/01/05 18:43:45 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,12 @@ void	*malloc_tiny(size_t size)
 		return (tmp->ptr);
 	if (!tmp)
 	{
+		defrag(tiny);
+	if (check_chain(&tmp, size))
+		return (tmp->ptr);
+	}
+	if (!tmp)
+	{
 		tiny = get_tiny_static(NULL, 0);
 		while (tiny->next)
 			tiny = tiny->next;
@@ -61,6 +67,12 @@ void	*malloc_small(size_t size)
 	tmp = small;
 	if (check_chain(&tmp, size))
 			return (tmp->ptr);
+	if (!tmp)
+	{
+		defrag(small);
+	if (check_chain(&tmp, size))
+		return (tmp->ptr);
+	}
 	if (!tmp)
 	{
 		small = get_small_static(NULL, 0);

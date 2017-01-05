@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 23:31:57 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/01/05 18:10:36 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 void	print_error(void *ptr)
 {
-		ft_putstr("malloc: *** error for object ");
-		ft_putstr("0x");
-		ft_putnbr_base((long int)ptr, 16);
-		ft_putendl(": pointer being freed was not allocated");
-		ft_putendl("*** set a breakpoint in malloc_error_break to debug");
-		exit(0);
+	ft_putstr("malloc: *** error for object ");
+	ft_putstr("0x");
+	ft_putnbr_base((long int)ptr, 16);
+	ft_putendl(": pointer being freed was not allocated");
+	ft_putendl("*** set a breakpoint in malloc_error_break to debug");
+	exit(0);
 }
 
 int		free_tiny(void *ptr)
@@ -29,14 +29,14 @@ int		free_tiny(void *ptr)
 	tiny = get_tiny_static(NULL, 0);
 	while (tiny)
 	{
-		if (tiny->ptr >= ptr && ptr < (tiny->ptr + tiny->size))
+		if (tiny->ptr <= ptr && ptr < (tiny->ptr + tiny->size))
 		{
 			if (tiny->is_free == 0)
 			{
 				tiny->is_free = 1;
 				tiny = get_tiny_static(NULL, 0);
 				defrag(tiny);
-				free_chain(tiny, getpagesize(), TINY);
+//				free_chain(tiny, getpagesize(), TINY);
 				return (1);
 			}
 			print_error(ptr);
@@ -53,14 +53,14 @@ int		free_small(void *ptr)
 	small = get_small_static(NULL, 0);
 	while (small)
 	{
-		if (small->ptr >= ptr && ptr < (small->ptr + small->size))
+		if (small->ptr <= ptr && ptr < (small->ptr + small->size))
 		{
 			if (small->is_free == 0)
 			{
 				small->is_free = 1;
 				small = get_small_static(NULL, 0);
-				defrag(small);
-				free_chain(small, getpagesize() * 32, SMALL);
+//				defrag(small);
+//				free_chain(small, getpagesize() * 32, SMALL);
 				return (1);
 			}
 			print_error(ptr);
@@ -79,7 +79,7 @@ int		free_large(void *ptr)
 	tmp = NULL;
 	while (large)
 	{
-		if (large->ptr >= ptr && ptr < (large->ptr + large->size))
+		if (large->ptr <= ptr && ptr < (large->ptr + large->size))
 		{
 			if (large->is_free == 0)
 			{

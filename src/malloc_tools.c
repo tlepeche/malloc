@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:38:30 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 23:31:35 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/01/05 18:43:49 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,9 @@ void	split_memory(t_block *mem, size_t size, int type)
 		new_split_block(mem, size, mem->size, type);
 }
 
+// A RETRAVAILLER
+// QUE LA MAILLON SOIT FREE OU PAS POUR L'UTILISATEUR, IL EST QUAND MEME ALLOUE
+// AU NIVEAU SYSTEM DONC COMPTER.
 int		getprocesslimit(size_t size)
 {
 	struct rlimit	rlp;
