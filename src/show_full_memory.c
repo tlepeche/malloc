@@ -6,11 +6,11 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 16:38:59 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/22 23:05:00 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/01 17:01:03 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <test.h>
+#include <malloc.h>
 
 static inline int		print_chain(t_block *block)
 {

@@ -1,27 +1,75 @@
-#include <test.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-void	test_malloc()
+void	show_alloc_mem();
+void	show_full_mem();
+
+void	malloc_calloc(void)
 {
 	char	*str;
 	char	*str2;
 	char	*str3;
 	char	*str4;
+	int		i = 0;
 
-	printf("malloc str de 16 octets\n");
-	str = (char*)malloc(sizeof(char) * 16);	
-	printf("malloc str2 de 1257 octets\n");
-	str2 = (char*)malloc(sizeof(char) * 1257);	
-	printf("malloc str3 de 327 octets\n");
-	str3 = (char*)malloc(sizeof(char) * 327);	
-	printf("malloc str4 de 42 octets\n\n");
-	str4 = (char*)malloc(sizeof(char) * 42);	
+	printf("calloc str de 16 octets * 2\n");
+	str = (char*)calloc(2 ,sizeof(char) * 16);
+	while (++i < 16 * 2)
+		printf("%d", str[i]);
+
+	printf("\ncalloc str2 de 1257 octets * 3\n");
+	str2 = (char*)calloc(3, sizeof(char) * 1257);
+	i = 0;
+	while (++i < 3 * 1257)
+		printf("%d", str[i]);
+
+	printf("\ncalloc str3 de 327 octets * 2\n");
+	str3 = (char*)calloc(2, sizeof(char) * 327);
+	i = 0;
+	while (++i < 2 * 327)
+		printf("%d", str[i]);
+
+	printf("\ncalloc str4 de 42 octets * 5\n");
+	str4 = (char*)calloc(5, sizeof(char) * 42);
+	i = 0;
+	while (++i < 5 * 42)
+		printf("%d", str[i]);
+	printf("\n");
+
 	printf("Allocated memory:\n");
 	show_alloc_mem();
 	printf("\nFull process memory\n");
 	show_full_mem();
 }
 
-void	test_realloc()
+void	malloc_malloc(void)
+{
+	char	*str;
+	char	*str2;
+	char	*str3;
+	char	*str4;
+	char	*str5;
+	char	*str6;
+
+	printf("malloc str de 16 octets\n");
+	str = (char*)malloc(sizeof(char) * 16);
+	printf("malloc str2 de 1257 octets\n");
+	str2 = (char*)malloc(sizeof(char) * 1257);
+	printf("malloc str3 de 327 octets\n");
+	str3 = (char*)malloc(sizeof(char) * 327);
+	printf("malloc str4 de 42 octets\n");
+	str4 = (char*)malloc(sizeof(char) * 42);
+	printf("malloc str5 de 1 octet\n");
+	str5 = (char*)malloc(sizeof(char) * 1);
+	printf("malloc str6 de -1 octet\n\n");
+	str6 = (char*)malloc(sizeof(char) * -1);
+	printf("Allocated memory:\n");
+	show_alloc_mem();
+	printf("\nFull process memory\n");
+	show_full_mem();
+}
+
+void	malloc_realloc(void)
 {
 	char	*str;
 	char	*str2;
@@ -29,13 +77,13 @@ void	test_realloc()
 	char	*str4;
 
 	printf("malloc str de 16 octets\n");
-	str = (char*)malloc(sizeof(char) * 16);	
+	str = (char*)malloc(sizeof(char) * 16);
 	printf("malloc str2 de 1257 octets\n");
-	str2 = (char*)malloc(sizeof(char) * 1257);	
+	str2 = (char*)malloc(sizeof(char) * 1257);
 	printf("malloc str3 de 327 octets\n");
-	str3 = (char*)malloc(sizeof(char) * 327);	
+	str3 = (char*)malloc(sizeof(char) * 327);
 	printf("malloc str4 de 42 octets\n\n");
-	str4 = (char*)malloc(sizeof(char) * 42);	
+	str4 = (char*)malloc(sizeof(char) * 42);
 
 	printf("Allocated memory:\n");
 	show_alloc_mem();
@@ -44,12 +92,12 @@ void	test_realloc()
 
 	printf("\nrealloc str de 27 octets\n");
 	str = (char *)realloc(str, sizeof(char) * 27);
+	printf("realloc str3 de 233 octets\n");
+	str3 = (char *)realloc(str3, sizeof(char) * 233);
 	printf("realloc str2 de 1337 octets\n");
 	str2 = (char *)realloc(str2, sizeof(char) * 1337);
-	printf("realloc str4 de 57 octets\n");
-	str4 = (char *)realloc(str4, sizeof(char) * 57);
-	printf("realloc str3 de 333 octets\n\n");
-	str3 = (char *)realloc(str3, sizeof(char) * 333);
+	printf("realloc str4 de 2100 octets\n\n");
+	str4 = (char *)realloc(str4, sizeof(char) * 2100);
 
 	printf("Allocated memory:\n");
 	show_alloc_mem();
@@ -57,7 +105,7 @@ void	test_realloc()
 	show_full_mem();
 }
 
-void	test_free()
+void	malloc_free(void)
 {
 	char	*str;
 	char	*str2;
@@ -65,13 +113,13 @@ void	test_free()
 	char	*str4;
 
 	printf("malloc str de 16 octets\n");
-	str = (char*)malloc(sizeof(char) * -1);	
+	str = (char*)malloc(sizeof(char) * 16);
 	printf("malloc str2 de 1257 octets\n");
-	str2 = (char*)malloc(sizeof(char) * 1257);	
+	str2 = (char*)malloc(sizeof(char) * 1257);
 	printf("malloc str3 de 327 octets\n");
-	str3 = (char*)malloc(sizeof(char) * 327);	
+	str3 = (char*)malloc(sizeof(char) * 327);
 	printf("malloc str4 de 42 octets\n\n");
-	str4 = (char*)malloc(sizeof(char) * 42);	
+	str4 = (char*)malloc(sizeof(char) * 42);
 
 	printf("Allocated memory:\n");
 	show_alloc_mem();
@@ -108,27 +156,33 @@ int		main(int ac, char **av)
 {
 
 	(void)ac;
-	if (av[1])
+	if (av[1] && !(av[1][1]))
 	{
 		if (av[1][0] == '1')
 		{
-			printf("TEST_MALLOC\n");
-			test_malloc();
+			printf("malloc_MALLOC\n");
+			malloc_malloc();
 		}
 		else if (av[1][0] == '2')
 		{
-			printf("TEST_REALLOC\n");
-			test_realloc();
+			printf("malloc_REALLOC\n");
+			malloc_realloc();
 		}
 		else if (av[1][0] == '3')
 		{
-			printf("TEST_FREE\n");
-			test_free();
+			printf("malloc_FREE\n");
+			malloc_free();
 		}
+		else if (av[1][0] == '4')
+		{
+			printf("malloc_CALLOC\n");
+			malloc_calloc();
+		}
+
 		else
-			printf("please choose what test to do :\n1 -> malloc\n2 -> realloc\n3 -> free\n");
+			printf("please choose what malloc to do :\n1 -> malloc\n2 -> realloc\n3 -> free\n4 -> calloc\n");
 	}
 	else
-		printf("please choose what test to do :\n1 -> malloc\n2 -> realloc\n3 -> free\n");
+		printf("please choose what malloc to do :\n1 -> malloc\n2 -> realloc\n3 -> free\n4 -> calloc\n");
 	return (0);
 }

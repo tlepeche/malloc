@@ -6,11 +6,11 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:44:37 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/21 21:44:59 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/01 17:01:14 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <test.h>
+#include <malloc.h>
 
 t_block	*get_tiny_static(t_block *block, int idx)
 {

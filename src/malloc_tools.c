@@ -6,11 +6,11 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:38:30 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/01/05 18:43:49 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/01 20:18:41 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <test.h>
+#include <malloc.h>
 
 void	*check_chain(t_block **block, size_t size)
 {
@@ -19,7 +19,8 @@ void	*check_chain(t_block **block, size_t size)
 		if ((*block)->is_free && (*block)->size >= size)
 		{
 			(*block)->is_free = 0;
-			split_memory(*block, size, (*block)->type);
+			if ((*block)->is_free == 0 && (*block)->size > size)
+				new_split_block(*block, size, (*block)->size, (*block)->type);
 			return ((*block)->ptr);
 		}
 		*block = (*block)->next;
@@ -58,53 +59,59 @@ void	new_split_block(t_block *mem, size_t tmp_size, size_t size, int type)
 	mem->next = tmp_next;
 }
 
-void	split_memory(t_block *mem, size_t size, int type)
+size_t	getmemlock(size_t size, struct rlimit rlp)
 {
-	if (mem->is_free == 0 && mem->size > size)
-		new_split_block(mem, size, mem->size, type);
-}
-
-// A RETRAVAILLER
-// QUE LA MAILLON SOIT FREE OU PAS POUR L'UTILISATEUR, IL EST QUAND MEME ALLOUE
-// AU NIVEAU SYSTEM DONC COMPTER.
-int		getprocesslimit(size_t size)
-{
-	struct rlimit	rlp;
 	t_block			*mem;
 	size_t			mem_lock;
-	int				free;
 
-	free = 0;
-	mem = get_tiny_static(NULL, 0);
-	mem_lock = 0;
-	while (mem)
-	{
-		if (mem->size > size && mem->is_free && size <= (size_t)(getpagesize() / 128))
-			free = 1;
-		mem_lock += mem->size;
-		mem = mem->next;
-	}
+	mem_lock = size;
 	mem = get_small_static(NULL, 0);
 	while (mem)
 	{
-		if (mem->size > size && mem->is_free &&
-				size <= (size_t)(getpagesize() / 4) && size > (size_t)(getpagesize() / 128))
-			free = 1;
+		if (mem_lock > rlp.rlim_max)
+			return (0);
 		mem_lock += mem->size;
 		mem = mem->next;
 	}
 	mem = get_large_static(NULL, 0);
 	while (mem)
 	{
-		if (mem->size > size && mem->is_free && size > (size_t)(getpagesize() / 4))
-			free = 1;
+		if (mem_lock > rlp.rlim_max)
+			return (0);
 		mem_lock += mem->size;
 		mem = mem->next;
 	}
+	if (mem_lock > rlp.rlim_max)
+		return (0);
+	return (mem_lock);
+}
 
-	if (getrlimit(RLIMIT_MEMLOCK, &rlp) == -1)
+int		getprocesslimit(size_t size)
+{
+	struct rlimit	rlp;
+	size_t			mem_lock;
+	t_block			*mem;
+
+	if (getrlimit(RLIMIT_RSS, &rlp) == -1)
+	{
 		ft_putendl("Call getrlimit failed");
+		return (0);
+	}
+	mem_lock = size;
+	mem = get_tiny_static(NULL, 0);
+	while (mem)
+	{
+		if (mem_lock > rlp.rlim_max)
+		{
+			ft_putendl("Process can't handle this much memory allocation");
+			return (0);
+		}
+		mem_lock += mem->size;
+		mem = mem->next;
+	}
+	if ((mem_lock = getmemlock(mem_lock, rlp)) == 0)
+		ft_putendl("Process can't handle this much memory allocation");
 	else
-		return (mem_lock > rlp.rlim_max);
+		return (mem_lock > rlp.rlim_max ? 0 : 1);
 	return (0);
 }

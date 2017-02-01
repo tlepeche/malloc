@@ -1,23 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   calloc.c                                           :+:      :+:    :+:   */
+/*   find_mem.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/10/22 19:24:23 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/01 16:58:10 by tlepeche         ###   ########.fr       */
+/*   Created: 2017/01/06 15:49:17 by tlepeche          #+#    #+#             */
+/*   Updated: 2017/02/01 19:44:45 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <malloc.h>
 
-void	*calloc(size_t count, size_t size)
+t_block	*find_mem(t_block *block, size_t size)
 {
-	void	*ptr;
+	t_block *tmp;
 
-	ptr = malloc(count * size);
-	if (ptr)
-		ft_bzero(ptr, count * size);
-	return (ptr);
+	tmp = block;
+	if (check_chain(&tmp, size))
+		return (tmp);
+	if (!tmp)
+	{
+		defrag(block);
+		tmp = block;
+		if (check_chain(&tmp, size))
+			return (tmp);
+	}
+	return (tmp);
 }

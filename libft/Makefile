@@ -19,6 +19,10 @@ SRC = ft_putnbr.c \
 	  ft_putchar.c \
 	  ft_memcpy.c \
 	  ft_bzero.c \
+	  ft_itoa.c\
+	  ft_strrevchr.c\
+	  ft_strlen.c\
+	  ft_strsub.c\
 
 NO_COLOR = "\033[0;0m"
 CC_COLOR = "\033[0;33m"

@@ -6,11 +6,11 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/01/05 18:10:36 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/01 17:00:32 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <test.h>
+#include <malloc.h>
 
 void	print_error(void *ptr)
 {
@@ -34,9 +34,6 @@ int		free_tiny(void *ptr)
 			if (tiny->is_free == 0)
 			{
 				tiny->is_free = 1;
-				tiny = get_tiny_static(NULL, 0);
-				defrag(tiny);
-//				free_chain(tiny, getpagesize(), TINY);
 				return (1);
 			}
 			print_error(ptr);
@@ -58,9 +55,6 @@ int		free_small(void *ptr)
 			if (small->is_free == 0)
 			{
 				small->is_free = 1;
-				small = get_small_static(NULL, 0);
-//				defrag(small);
-//				free_chain(small, getpagesize() * 32, SMALL);
 				return (1);
 			}
 			print_error(ptr);

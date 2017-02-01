@@ -6,7 +6,7 @@
 #    By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/17 18:36:33 by tlepeche          #+#    #+#              #
-#    Updated: 2017/01/05 16:25:47 by tlepeche         ###   ########.fr        #
+#    Updated: 2017/02/01 17:27:18 by tlepeche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ SRC =	malloc.c \
 		statics.c \
 		show_memory.c \
 		show_full_memory.c \
+		find_mem.c \
 
 SRCDIR = src/
 
@@ -44,16 +45,14 @@ C_FLAGS= -Wall -Werror -Wextra
 
 B_FLAGS= -shared
 
-all: link
+all: lft $(NAME)
 	
-link: lft $(NAME)
-	ln -s $(NAME) libft_malloc.so
-
 $(NAME): $(OBJ)
 	@$(CC) $(B_FLAGS) $(INC) -o $(NAME) $(LIB) $^
 	@echo ""
 	@echo $(PX_STR) : $(EX_STR)
 	@echo ""
+	ln -Fs $(NAME) libft_malloc.so
 
 $(OBJDIR)%.o: $(SRCDIR)%.c
 	@mkdir -p $(OBJDIR)
@@ -61,7 +60,7 @@ $(OBJDIR)%.o: $(SRCDIR)%.c
 	@echo $(CC_STR) $*
 
 lft:
-	make -C libft
+	@make -C libft
 
 clean:
 	@$(RM) $(OBJDIR)

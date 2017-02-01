@@ -6,11 +6,11 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/01/05 17:58:34 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/01 17:00:39 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <test.h>
+#include <malloc.h>
 
 void	defrag(t_block *block)
 {
