@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:38:30 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/01 20:18:41 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/02 15:59:03 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,10 +102,7 @@ int		getprocesslimit(size_t size)
 	while (mem)
 	{
 		if (mem_lock > rlp.rlim_max)
-		{
-			ft_putendl("Process can't handle this much memory allocation");
 			return (0);
-		}
 		mem_lock += mem->size;
 		mem = mem->next;
 	}
