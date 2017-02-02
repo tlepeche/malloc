@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 void	show_alloc_mem();
 void	show_full_mem();
@@ -152,6 +153,39 @@ void	malloc_free(void)
 	free(str4);
 }
 
+void	u_stupid_malloc_test(void)
+{
+	int		i;
+	int		uji;
+	void	*allocation;
+
+	i = 0;
+	srand(time(NULL));
+	printf("--- Stupid test begin ---\n");
+/*	printf("--- Random stuff: ---");
+	while (i < 1000)
+	{
+		uji = rand() % 2000;
+		allocation = (void *)malloc(sizeof(char) * uji);
+		free(allocation);
+		i++;
+	}
+	show_full_mem();*/
+	printf("--- Fat alloc ---\n");
+	allocation = NULL;
+	allocation = (void *)malloc(sizeof(char) * 65535);
+	i = 5;
+	while (i > 0)
+	{
+	printf("--- Fat realloc ---\n");
+		allocation = (void *)realloc(allocation, 65535 / i);	
+		show_full_mem();
+		printf("\n");
+		i--;
+	}
+	free(allocation);
+}
+
 int		main(int ac, char **av)
 {
 
@@ -178,6 +212,8 @@ int		main(int ac, char **av)
 			printf("malloc_CALLOC\n");
 			malloc_calloc();
 		}
+		else if (av[1][0] == '5')
+			u_stupid_malloc_test();
 
 		else
 			printf("please choose what malloc to do :\n1 -> malloc\n2 -> realloc\n3 -> free\n4 -> calloc\n");

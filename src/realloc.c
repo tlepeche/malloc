@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 15:03:47 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/01 18:53:32 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/02 18:27:17 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,15 +60,25 @@ int		is_ok(t_block *block, unsigned int new_size)
 	return (0);
 }
 
+void	*create_new_ptr(void *ptr, size_t block_size, size_t size)
+{
+	void	*new_ptr;
+
+	new_ptr = malloc(size);
+	size = size < block_size ? size : block_size;
+	new_ptr = ft_memcpy(new_ptr, ptr, size);
+	free(ptr);
+	return (new_ptr);
+}
+
 void	*realloc(void *ptr, size_t size)
 {
 	t_block *block;
 	t_block	*tmp;
-	void	*new_ptr;
 
 	if ((block = find_ptr(ptr)) == NULL)
 		return (NULL);
-	if (stupid_realloc(&block, size))
+	if (block->type != LARGE && stupid_realloc(&block, size))
 		return (block->ptr);
 	if (block->next && block->next->is_free &&
 			(block->size + block->next->size) >= size && is_ok(block, size))
@@ -81,10 +91,5 @@ void	*realloc(void *ptr, size_t size)
 		return (block->ptr);
 	}
 	else
-	{
-		new_ptr = malloc(size);
-		new_ptr = memcpy(new_ptr, ptr, block->size);
-		free(ptr);
-		return (new_ptr);
-	}
+		return (create_new_ptr(ptr, block->size, size));
 }
