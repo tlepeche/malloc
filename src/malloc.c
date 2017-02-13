@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:45:12 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/01 20:05:12 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/13 17:16:06 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	*malloc_tiny(size_t size)
 
 	tiny = get_tiny_static(NULL, 2);
 	tmp = find_mem(tiny, size);
-	if (tmp->ptr)
+	if (tmp && tmp->ptr)
 		return (tmp->ptr);
 	if (!tmp)
 	{
@@ -60,7 +60,7 @@ void	*malloc_small(size_t size)
 
 	small = get_small_static(NULL, 2);
 	tmp = find_mem(small, size);
-	if (tmp->ptr)
+	if (tmp && tmp->ptr)
 		return (tmp->ptr);
 	if (!tmp)
 	{
