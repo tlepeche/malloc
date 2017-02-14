@@ -6,7 +6,7 @@
 #    By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/17 18:36:33 by tlepeche          #+#    #+#              #
-#    Updated: 2017/02/01 17:27:18 by tlepeche         ###   ########.fr        #
+#    Updated: 2017/02/14 22:35:48 by tlepeche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,13 +19,10 @@ NAME = libft_malloc_$(HOSTTYPE).so
 SRC =	malloc.c \
 		malloc_tools.c \
 		free.c \
-		free_tools.c \
 		realloc.c \
 		calloc.c \
-		statics.c \
 		show_memory.c \
 		show_full_memory.c \
-		find_mem.c \
 
 SRCDIR = src/
 

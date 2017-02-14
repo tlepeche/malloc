@@ -62,8 +62,15 @@ void	malloc_malloc(void)
 	str4 = (char*)malloc(sizeof(char) * 42);
 	printf("malloc str5 de 1 octet\n");
 	str5 = (char*)malloc(sizeof(char) * 1);
-	printf("malloc str6 de -1 octet\n\n");
-	str6 = (char*)malloc(sizeof(char) * -1);
+	printf("malloc str6 de 4055 octet\n\n");
+	str6 = (char*)malloc(sizeof(char) * 4055);
+	printf("malloc str6 de 4055 octet\n\n");
+	str6 = (char*)malloc(sizeof(char) * 4055);
+	printf("malloc str6 de 4055 octet\n\n");
+	str6 = (char*)malloc(sizeof(char) * 4055);
+	printf("malloc str6 de 4055 octet\n\n");
+	str6 = (char*)malloc(sizeof(char) * 4055);
+
 	printf("Allocated memory:\n");
 	show_alloc_mem();
 	printf("\nFull process memory\n");
@@ -156,7 +163,7 @@ void	malloc_free(void)
 void	u_stupid_malloc_test(void)
 {
 	int		i;
-	int		uji;
+//	int		uji;
 	void	*allocation;
 
 	i = 0;

@@ -6,81 +6,71 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/01 17:00:32 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/14 22:33:21 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <malloc.h>
 
-void	print_error(void *ptr)
+void	defrag(t_block **block)
 {
-	ft_putstr("malloc: *** error for object ");
-	ft_putstr("0x");
-	ft_putnbr_base((long int)ptr, 16);
-	ft_putendl(": pointer being freed was not allocated");
-	ft_putendl("*** set a breakpoint in malloc_error_break to debug");
-	exit(0);
+	t_block *tmp;
+	t_block *prev;
+
+	if (!((*block) && (*block)->next))
+		return ;
+	tmp = (*block)->next;
+	prev = *block;
+	while (prev->next)
+	{
+		if (prev->is_free && tmp && tmp->is_free)
+		{
+			prev->next = tmp->next;
+			prev->size += tmp->size + sizeof(t_block);
+		}
+		else
+			prev = tmp;
+		tmp = tmp->next;
+	}
 }
 
-int		free_tiny(void *ptr)
+int		free_block(t_block **block, void *ptr)
 {
-	t_block	*tiny;
+	t_block	*tmp;
 
-	tiny = get_tiny_static(NULL, 0);
-	while (tiny)
+	tmp = *block;
+	while (tmp)
 	{
-		if (tiny->ptr <= ptr && ptr < (tiny->ptr + tiny->size))
+		if (tmp->ptr <= ptr && ptr < (tmp->ptr + tmp->size) &&
+				tmp->is_free == 0)
 		{
-			if (tiny->is_free == 0)
-			{
-				tiny->is_free = 1;
-				return (1);
-			}
-			print_error(ptr);
+			tmp->is_free = 1;
+			defrag(block);
+			return (1);
 		}
-		tiny = tiny->next;
+		tmp = tmp->next;
 	}
 	return (0);
 }
 
-int		free_small(void *ptr)
-{
-	t_block	*small;
-
-	small = get_small_static(NULL, 0);
-	while (small)
-	{
-		if (small->ptr <= ptr && ptr < (small->ptr + small->size))
-		{
-			if (small->is_free == 0)
-			{
-				small->is_free = 1;
-				return (1);
-			}
-			print_error(ptr);
-		}
-		small = small->next;
-	}
-	return (0);
-}
-
-int		free_large(void *ptr)
+int		free_large(t_block **block, void *ptr)
 {
 	t_block	*large;
 	t_block	*tmp;
 
-	large = get_large_static(NULL, 0);
+	large = *block;
 	tmp = NULL;
 	while (large)
 	{
-		if (large->ptr <= ptr && ptr < (large->ptr + large->size))
+		if (large->ptr <= ptr && ptr < (large->ptr + large->size) &&
+				large->is_free == 0)
 		{
-			if (large->is_free == 0)
-			{
-				munmap(large->ptr, large->size);
-				change_static(large, tmp, LARGE);
-				return (1);
-			}
+			if (tmp)
+				tmp->next = large->next;
+			else
+				*block = large->next;
+			munmap(large->ptr, large->size);
+			return (1);
 		}
 		tmp = large;
 		large = large->next;
@@ -90,12 +80,15 @@ int		free_large(void *ptr)
 
 void	free(void *ptr)
 {
+	t_memory	*mem;
+
 	if (!ptr)
 		return ;
-	if (free_tiny(ptr))
+	mem = get_memory();
+	if (free_block(&(mem->tiny), ptr) == 1)
 		return ;
-	if (free_small(ptr))
+	if (free_block(&(mem->small), ptr) == 1)
 		return ;
-	else if (free_large(ptr))
+	else if (free_large(&(mem->large), ptr) == 1)
 		return ;
 }

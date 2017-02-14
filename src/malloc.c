@@ -6,115 +6,103 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:45:12 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/13 17:16:06 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/14 22:45:36 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <malloc.h>
 
-void	*finish_malloc(t_block *block, size_t size)
+int		extend_mem(t_block **block, size_t size)
 {
-	if (block->ptr == MAP_FAILED)
-	{
-		munmap(block, sizeof(t_block *));
-		return (NULL);
-	}
-	else
-		block->is_free = 0;
-	if (block->is_free == 0 && block->size > size)
-		new_split_block(block, size, block->size, block->type);
-	return (block);
-}
-
-void	*malloc_tiny(size_t size)
-{
-	t_block *tiny;
 	t_block *tmp;
 
-	tiny = get_tiny_static(NULL, 2);
-	tmp = find_mem(tiny, size);
-	if (tmp && tmp->ptr)
-		return (tmp->ptr);
-	if (!tmp)
-	{
-		tiny = get_tiny_static(NULL, 0);
-		while (tiny->next)
-			tiny = tiny->next;
-		tiny->next = create_new_block(TINY);
-		tiny = tiny->next;
-	}
-	tiny->ptr = mmap(0, TINY_SIZE, PROT_READ | PROT_WRITE,
+	tmp = *block;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = mmap(0, size, PROT_READ | PROT_WRITE,
 			MAP_ANON | MAP_PRIVATE, -1, 0);
-	tiny->size = (size_t)(TINY_SIZE);
-	tiny = finish_malloc(tiny, size);
-	if (tiny)
-		return (tiny->ptr);
-	else
-		return (NULL);
+	if (tmp->next == MAP_FAILED)
+		return (0);
+	tmp = tmp->next;
+	tmp->size = size;
+	tmp->is_free = 1;
+	tmp->ptr = (void *)block + sizeof(t_block);
+	tmp->next = NULL;
+	return (1);
 }
 
-void	*malloc_small(size_t size)
+void	*malloc_block(t_block **block, size_t size, size_t size_mem)
 {
-	t_block *small;
 	t_block *tmp;
 
-	small = get_small_static(NULL, 2);
-	tmp = find_mem(small, size);
-	if (tmp && tmp->ptr)
-		return (tmp->ptr);
-	if (!tmp)
+	if (!(*block))
 	{
-		small = get_small_static(NULL, 0);
-		while (small->next)
-			small = small->next;
-		small->next = create_new_block(SMALL);
-		small = small->next;
+		*block = mmap(0, size_mem, PROT_READ | PROT_WRITE,
+				MAP_ANON | MAP_PRIVATE, -1, 0);
+		if (*block == MAP_FAILED)
+			return (NULL);
+		(*block)->size = size_mem - sizeof(t_block);
+		(*block)->is_free = 1;
+		(*block)->ptr = (void *)(*block) + sizeof(t_block);
+		(*block)->next = NULL;
 	}
-	small->ptr = mmap(0, SMALL_SIZE, PROT_READ | PROT_WRITE,
-			MAP_ANON | MAP_PRIVATE, -1, 0);
-	small->size = (size_t)(SMALL_SIZE);
-	small = finish_malloc(small, size);
-	if (small)
-		return (small->ptr);
-	else
+	tmp = *block;
+	while (tmp->next)
+		tmp = tmp->next;
+	if (tmp->size < size + sizeof(t_block) && extend_mem(block, size_mem) == 0)
 		return (NULL);
+	return (new_split(block, size));
 }
 
-void	*malloc_large(size_t size)
+void	*create_block(t_block **block, size_t size)
 {
-	t_block *large;
-	t_block *tmp;
-
-	large = get_large_static(NULL, 2);
-	tmp = large;
-	if (check_chain(&tmp, size))
-		return (tmp->ptr);
-	if (!tmp)
-	{
-		large = get_large_static(NULL, 0);
-		while (large->next)
-			large = large->next;
-		large->next = create_new_block(LARGE);
-		large = large->next;
-	}
-	large->ptr = mmap(0, size, PROT_READ | PROT_WRITE,
+	*block = mmap(0, size + sizeof(t_block), PROT_READ | PROT_WRITE,
 			MAP_ANON | MAP_PRIVATE, -1, 0);
-	large->size = size;
-	large = finish_malloc(large, size);
-	if (large)
-		return (large->ptr);
-	else
+	if (*block == MAP_FAILED)
 		return (NULL);
+	(*block)->size = size;
+	(*block)->is_free = 0;
+	(*block)->ptr = (void *)(*block) + sizeof(t_block);
+	(*block)->next = NULL;
+	return ((*block)->ptr);
+}
+
+void	*malloc_large(t_block **block, size_t size)
+{
+	t_block	*tmp;
+	t_block *new;
+
+	if (!(*block))
+		return (create_block(block, size));
+	else
+	{
+		tmp = *block;
+		while (tmp->next)
+			tmp = tmp->next;
+		new = mmap(0, size + sizeof(t_block), PROT_READ | PROT_WRITE,
+				MAP_ANON | MAP_PRIVATE, -1, 0);
+		if (new == MAP_FAILED)
+			return (NULL);
+		tmp->next = new;
+		new->size = size;
+		new->is_free = 0;
+		new->ptr = (void *)new + sizeof(t_block);
+		new->next = NULL;
+		return (new->ptr);
+	}
 }
 
 void	*malloc(size_t size)
 {
-	if (getprocesslimit(size) == 0)
+	t_memory	*mem;
+
+	mem = get_memory();
+	if (getprocesslimit(size, mem) == 0)
 		return (NULL);
 	if (size <= (size_t)(TINY_MAX))
-		return (malloc_tiny(size));
+		return (malloc_block(&(mem->tiny), size, TINY_SIZE));
 	if (size <= (size_t)(SMALL_MAX))
-		return (malloc_small(size));
+		return (malloc_block(&(mem->small), size, SMALL_SIZE));
 	else
-		return (malloc_large(size));
+		return (malloc_large(&(mem->large), size));
 }

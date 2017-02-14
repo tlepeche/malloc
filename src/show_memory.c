@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 16:38:59 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/01 19:20:00 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/14 20:39:58 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,7 @@ static inline int		print_chain(t_block *block)
 			ft_putstr("0x");
 			ft_putnbr_base((long int)(block->ptr), 16);
 			ft_putstr(" - 0x");
-			if (block->size != 0)
-				ft_putnbr_base((long int)(block->ptr + block->size - 1), 16);
-			else
-				ft_putnbr_base((long int)(block->ptr + block->size), 16);
+			ft_putnbr_base((long int)(block->ptr + block->size - 1), 16);
 			ft_putstr(" : ");
 			ft_putnbr(block->size);
 			ft_putendl(" octets");
@@ -38,25 +35,25 @@ static inline int		print_chain(t_block *block)
 	return (res);
 }
 
-static inline void		show_rest_mem(int res)
+static inline void		show_rest_mem(int res, t_memory *mem)
 {
-	t_block	*mem;
+	t_block	*block;
 
-	mem = get_small_static(NULL, 0);
-	if (mem && mem->ptr)
+	block = mem->small;
+	if (block && block->ptr)
 	{
 		ft_putstr("SMALL : 0x");
-		ft_putnbr_base((long int)mem->ptr, 16);
+		ft_putnbr_base((long int)block, 16);
 		ft_putchar('\n');
-		res += print_chain(mem);
+		res += print_chain(block);
 	}
-	mem = get_large_static(NULL, 0);
-	if (mem && mem->ptr)
+	block = mem->large;
+	if (block && block->ptr)
 	{
 		ft_putstr("LARGE : 0x");
-		ft_putnbr_base((long int)mem->ptr, 16);
+		ft_putnbr_base((long int)block, 16);
 		ft_putchar('\n');
-		res += print_chain(mem);
+		res += print_chain(block);
 	}
 	ft_putstr("Total : ");
 	ft_putnbr(res);
@@ -65,17 +62,19 @@ static inline void		show_rest_mem(int res)
 
 void					show_alloc_mem(void)
 {
-	t_block *mem;
-	int		res;
+	t_memory	*mem;
+	t_block		*tiny;
+	int			res;
 
 	res = 0;
-	mem = get_tiny_static(NULL, 0);
-	if (mem && mem->ptr)
+	mem = get_memory();
+	tiny = mem->tiny;
+	if (tiny && tiny->ptr)
 	{
 		ft_putstr("TINY : 0x");
-		ft_putnbr_base((long int)mem->ptr, 16);
+		ft_putnbr_base((long int)tiny, 16);
 		ft_putchar('\n');
-		res += print_chain(mem);
+		res += print_chain(tiny);
 	}
-	show_rest_mem(res);
+	show_rest_mem(res, mem);
 }
