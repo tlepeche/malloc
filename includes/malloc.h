@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/01 16:57:31 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/14 22:31:53 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/22 16:33:43 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,14 @@
 # include <unistd.h>
 # include <sys/mman.h>
 # include <stdio.h>
-//*# include <stdlib.h>
 # include <sys/resource.h>
 # include <libft.h>
 
-# define TINY_MAX	getpagesize() / 128
-# define TINY_SIZE	getpagesize() * 2
+# define TINY_MAX	getpagesize() / 64
+# define TINY_SIZE	getpagesize() * 4
 
-# define SMALL_MAX	getpagesize() / 4
-# define SMALL_SIZE	getpagesize() * 128
+# define SMALL_MAX	getpagesize() / 8
+# define SMALL_SIZE	getpagesize() * 256
 
 # define TINY		1
 # define SMALL		2

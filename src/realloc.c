@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 15:03:47 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/14 22:34:46 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/22 16:34:21 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,8 @@ void	*realloc(void *ptr, size_t size)
 	t_block		*tmp;
 	t_memory	*mem;
 
+	if (!ptr)
+		return (malloc(size));
 	mem = get_memory();
 	if ((block = find_ptr(mem, ptr)) == NULL)
 		return (NULL);

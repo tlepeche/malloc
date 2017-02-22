@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/14 22:33:21 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/15 19:03:09 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,7 @@ int		free_block(t_block **block, void *ptr)
 	tmp = *block;
 	while (tmp)
 	{
-		if (tmp->ptr <= ptr && ptr < (tmp->ptr + tmp->size) &&
-				tmp->is_free == 0)
+		if (tmp->ptr == ptr && tmp->is_free == 0)
 		{
 			tmp->is_free = 1;
 			defrag(block);
@@ -62,8 +61,7 @@ int		free_large(t_block **block, void *ptr)
 	tmp = NULL;
 	while (large)
 	{
-		if (large->ptr <= ptr && ptr < (large->ptr + large->size) &&
-				large->is_free == 0)
+		if (large->ptr == ptr && large->is_free == 0)
 		{
 			if (tmp)
 				tmp->next = large->next;
