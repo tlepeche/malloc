@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:45:12 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/15 19:08:29 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/22 17:55:30 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int		extend_mem(t_block **block, size_t size)
 	if (tmp->next == MAP_FAILED)
 		return (0);
 	tmp = tmp->next;
-	tmp->size = size;
+	tmp->size = size - sizeof(t_block);
 	tmp->is_free = 1;
 	tmp->ptr = (void *)block + sizeof(t_block);
 	tmp->next = NULL;
