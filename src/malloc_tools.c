@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:38:30 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/14 22:34:27 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/23 18:28:52 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,40 +48,40 @@ void		*new_split(t_block **block, size_t size)
 	return (tmp->ptr);
 }
 
-size_t		getmemlock(size_t size, struct rlimit rlp, t_memory *mem)
+size_t		getmemlock(unsigned long long int s, struct rlimit r, t_memory *m)
 {
-	size_t			mem_lock;
-	t_block			*block;
+	unsigned long long int	mem_lock;
+	t_block					*block;
 
-	block = mem->small;
-	mem_lock = size;
+	block = m->small;
+	mem_lock = s;
 	while (block)
 	{
-		if (mem_lock > rlp.rlim_max)
+		if (mem_lock > r.rlim_cur)
 			return (0);
 		mem_lock += block->size;
 		block = block->next;
 	}
-	block = mem->large;
+	block = m->large;
 	while (block)
 	{
-		if (mem_lock > rlp.rlim_max)
+		if (mem_lock > r.rlim_cur)
 			return (0);
 		mem_lock += block->size;
 		block = block->next;
 	}
-	if (mem_lock > rlp.rlim_max)
+	if (mem_lock > r.rlim_cur)
 		return (0);
 	return (mem_lock);
 }
 
 int			getprocesslimit(size_t size, t_memory *mem)
 {
-	struct rlimit	rlp;
-	size_t			mem_lock;
-	t_block			*tiny;
+	struct rlimit				rlp;
+	unsigned long long int		mem_lock;
+	t_block						*tiny;
 
-	if (!mem || getrlimit(RLIMIT_RSS, &rlp) == -1)
+	if (!mem || getrlimit(RLIMIT_AS, &rlp) == -1)
 	{
 		ft_putendl("Call getrlimit failed");
 		return (0);
@@ -90,7 +90,7 @@ int			getprocesslimit(size_t size, t_memory *mem)
 	tiny = mem->tiny;
 	while (tiny)
 	{
-		if (mem_lock > rlp.rlim_max)
+		if (mem_lock > rlp.rlim_cur)
 			return (0);
 		mem_lock += tiny->size;
 		tiny = tiny->next;
@@ -98,6 +98,6 @@ int			getprocesslimit(size_t size, t_memory *mem)
 	if ((mem_lock = getmemlock(mem_lock, rlp, mem)) == 0)
 		ft_putendl("Process can't handle this much memory allocation");
 	else
-		return (mem_lock > rlp.rlim_max ? 0 : 1);
+		return (mem_lock > rlp.rlim_cur ? 0 : 1);
 	return (0);
 }

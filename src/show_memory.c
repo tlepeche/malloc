@@ -6,31 +6,34 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 16:38:59 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/14 20:39:58 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/23 18:32:10 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <malloc.h>
 
-static inline int		print_chain(t_block *block)
+static inline int		print_chain(t_block *bck)
 {
 	int res;
 
 	res = 0;
-	while (block)
+	while (bck)
 	{
-		if (block->ptr && block->is_free == 0)
+		if (bck->ptr && bck->is_free == 0)
 		{
 			ft_putstr("0x");
-			ft_putnbr_base((long int)(block->ptr), 16);
+			ft_putnbr_base((long long int)(bck->ptr), 16);
 			ft_putstr(" - 0x");
-			ft_putnbr_base((long int)(block->ptr + block->size - 1), 16);
+			if (bck->size != 0)
+				ft_putnbr_base((long long int)(bck->ptr + bck->size - 1), 16);
+			else
+				ft_putnbr_base((long long int)(bck->ptr + bck->size), 16);
 			ft_putstr(" : ");
-			ft_putnbr(block->size);
+			ft_putnbr_base(bck->size, 10);
 			ft_putendl(" octets");
-			res += block->size;
+			res += bck->size;
 		}
-		block = block->next;
+		bck = bck->next;
 	}
 	return (res);
 }
@@ -43,7 +46,7 @@ static inline void		show_rest_mem(int res, t_memory *mem)
 	if (block && block->ptr)
 	{
 		ft_putstr("SMALL : 0x");
-		ft_putnbr_base((long int)block, 16);
+		ft_putnbr_base((long long int)block, 16);
 		ft_putchar('\n');
 		res += print_chain(block);
 	}
@@ -51,12 +54,12 @@ static inline void		show_rest_mem(int res, t_memory *mem)
 	if (block && block->ptr)
 	{
 		ft_putstr("LARGE : 0x");
-		ft_putnbr_base((long int)block, 16);
+		ft_putnbr_base((long long int)block, 16);
 		ft_putchar('\n');
 		res += print_chain(block);
 	}
 	ft_putstr("Total : ");
-	ft_putnbr(res);
+	ft_putnbr_base(res, 10);
 	ft_putendl(" octets");
 }
 
@@ -72,7 +75,7 @@ void					show_alloc_mem(void)
 	if (tiny && tiny->ptr)
 	{
 		ft_putstr("TINY : 0x");
-		ft_putnbr_base((long int)tiny, 16);
+		ft_putnbr_base((long long int)tiny, 16);
 		ft_putchar('\n');
 		res += print_chain(tiny);
 	}

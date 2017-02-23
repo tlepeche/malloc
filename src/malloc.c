@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:45:12 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/22 17:55:30 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/02/23 18:00:22 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,8 @@ int		extend_mem(t_block **block, size_t size)
 	tmp = tmp->next;
 	tmp->size = size - sizeof(t_block);
 	tmp->is_free = 1;
-	tmp->ptr = (void *)block + sizeof(t_block);
+	tmp->ptr = (void *)tmp + sizeof(t_block);
 	tmp->next = NULL;
-	defrag(block);
 	return (1);
 }
 
@@ -97,6 +96,8 @@ void	*malloc(size_t size)
 {
 	t_memory	*mem;
 
+	if ((long long int)size < 0)
+		return (NULL);
 	mem = get_memory();
 	if (getprocesslimit(size, mem) == 0)
 		return (NULL);

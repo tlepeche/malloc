@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   show_memory.c                                      :+:      :+:    :+:   */
+/*   show_full_memory.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/10/20 16:38:59 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/14 20:39:47 by tlepeche         ###   ########.fr       */
+/*   Created: 2017/02/23 18:30:09 by tlepeche          #+#    #+#             */
+/*   Updated: 2017/02/23 18:31:02 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,17 @@ static inline int		print_chain(t_block *block)
 	int res;
 
 	res = 0;
-	while (block)
+	while (block && block->ptr)
 	{
 		ft_putstr("0x");
-		ft_putnbr_base((long int)(block->ptr), 16);
+		ft_putnbr_base((long long int)(block->ptr), 16);
 		ft_putstr(" - 0x");
-		ft_putnbr_base((long int)(block->ptr + block->size - 1), 16);
+		if (block->size != 0)
+			ft_putnbr_base((long long int)(block->ptr + block->size - 1), 16);
+		else
+			ft_putnbr_base((long long int)(block->ptr + block->size), 16);
 		ft_putstr(" : ");
-		ft_putnbr(block->size);
+		ft_putnbr_base(block->size, 10);
 		if (block->is_free)
 			ft_putendl(" octets and is free");
 		else
@@ -43,7 +46,7 @@ static inline void		show_rest_mem(int res, t_memory *mem)
 	if (block && block->ptr)
 	{
 		ft_putstr("SMALL : 0x");
-		ft_putnbr_base((long int)block, 16);
+		ft_putnbr_base((long long int)block, 16);
 		ft_putchar('\n');
 		res += print_chain(block);
 	}
@@ -51,12 +54,12 @@ static inline void		show_rest_mem(int res, t_memory *mem)
 	if (block && block->ptr)
 	{
 		ft_putstr("LARGE : 0x");
-		ft_putnbr_base((long int)block, 16);
+		ft_putnbr_base((long long int)block, 16);
 		ft_putchar('\n');
 		res += print_chain(block);
 	}
 	ft_putstr("Total : ");
-	ft_putnbr(res);
+	ft_putnbr_base(res, 10);
 	ft_putendl(" octets");
 }
 
@@ -72,7 +75,7 @@ void					show_full_mem(void)
 	if (tiny && tiny->ptr)
 	{
 		ft_putstr("TINY : 0x");
-		ft_putnbr_base((long int)tiny, 16);
+		ft_putnbr_base((long long int)tiny, 16);
 		ft_putchar('\n');
 		res += print_chain(tiny);
 	}
