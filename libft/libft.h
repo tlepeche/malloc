@@ -6,7 +6,7 @@
 /*   By: tlepeche <tlepeche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/03 12:33:20 by tlepeche          #+#    #+#             */
-/*   Updated: 2016/10/20 18:18:57 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/03/24 16:39:52 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char				*ft_strcat(char *s1, char const *s2);
 char				*ft_strncat(char *s1, char const *s2, size_t n);
 size_t				ft_strlcat(char *dst, char const *src, size_t size);
 void				ft_putnbr(int n);
-void				ft_putnbr_base(long int nbr, size_t base);
+void				ft_putnbr_base(long long int nbr, size_t base);
 void				ft_putnbr_fd(int n, int fd);
 int					ft_strcmp(const char *s1, const char *s2);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
