@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 18:51:09 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/23 18:26:06 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/03/24 18:20:26 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,19 @@ void	free(void *ptr)
 {
 	t_memory	*mem;
 
+	pthread_mutex_lock(&(g_mutex.mutex));
 	if (!ptr)
+	{
+		pthread_mutex_unlock(&(g_mutex.mutex));
 		return ;
+	}
 	mem = get_memory();
 	if (free_block(&(mem->tiny), ptr) == 1)
-		return ;
-	if (free_block(&(mem->small), ptr) == 1)
-		return ;
+		pthread_mutex_unlock(&(g_mutex.mutex));
+	else if (free_block(&(mem->small), ptr) == 1)
+		pthread_mutex_unlock(&(g_mutex.mutex));
 	else if (free_large(&(mem->large), ptr) == 1)
-		return ;
+		pthread_mutex_unlock(&(g_mutex.mutex));
+	else
+		pthread_mutex_unlock(&(g_mutex.mutex));
 }

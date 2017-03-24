@@ -6,11 +6,13 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 21:45:12 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/23 18:00:22 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/03/24 18:42:03 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <malloc.h>
+
+t_mutex	g_mutex = {PTHREAD_MUTEX_INITIALIZER};
 
 int		extend_mem(t_block **block, size_t size)
 {
@@ -95,16 +97,23 @@ void	*malloc_large(t_block **block, size_t size)
 void	*malloc(size_t size)
 {
 	t_memory	*mem;
+	void		*ptr;
 
+	pthread_mutex_lock(&(g_mutex.mutex));
 	if ((long long int)size < 0)
+	{
+		pthread_mutex_unlock(&(g_mutex.mutex));
 		return (NULL);
+	}
 	mem = get_memory();
 	if (getprocesslimit(size, mem) == 0)
-		return (NULL);
-	if (size <= (size_t)(TINY_MAX))
-		return (malloc_block(&(mem->tiny), size, TINY_SIZE));
-	if (size <= (size_t)(SMALL_MAX))
-		return (malloc_block(&(mem->small), size, SMALL_SIZE));
+		ptr = NULL;
+	else if (size <= (size_t)(TINY_MAX))
+		ptr = malloc_block(&(mem->tiny), size, TINY_SIZE);
+	else if (size <= (size_t)(SMALL_MAX))
+		ptr = malloc_block(&(mem->small), size, SMALL_SIZE);
 	else
-		return (malloc_large(&(mem->large), size));
+		ptr = malloc_large(&(mem->large), size);
+	pthread_mutex_unlock(&(g_mutex.mutex));
+	return (ptr);
 }

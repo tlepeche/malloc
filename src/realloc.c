@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 15:03:47 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/23 16:08:48 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/03/24 18:26:58 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void	*create_new_ptr(void *ptr, size_t block_size, size_t size)
 {
 	void	*new_ptr;
 
+	pthread_mutex_unlock(&(g_mutex.mutex));
 	new_ptr = malloc(size);
 	size = size < block_size ? size : block_size;
 	new_ptr = ft_memcpy(new_ptr, ptr, size);
@@ -92,26 +93,27 @@ void	*realloc(void *ptr, size_t size)
 {
 	t_block		*block;
 	t_block		*tmp;
-	t_memory	*mem;
+	void		*new_ptr;
 
 	if (!ptr)
 		return (malloc(size));
-	mem = get_memory();
-	if ((block = find_ptr(mem, ptr)) == NULL)
-		return (NULL);
-	if (block->is_free == 1)
-		return (NULL);
-	if (block->size <= (size_t)SMALL_MAX && stupid_realloc(&block, size))
-		return (block->ptr);
-	if (block->next && block->next->is_free &&
+	pthread_mutex_lock(&(g_mutex.mutex));
+	if ((block = find_ptr(get_memory(), ptr)) == NULL ||
+			(block && block->is_free == 1))
+		new_ptr = NULL;
+	else if (block->size <= (size_t)SMALL_MAX && stupid_realloc(&block, size))
+		new_ptr = block->ptr;
+	else if (block->next && block->next->is_free &&
 			(block->size + block->next->size) >= size && is_ok(block, size))
 	{
 		block->size += block->next->size + sizeof(t_block);
 		tmp = block->next;
 		block->next = tmp->next;
 		stupid_realloc(&block, size);
-		return (block->ptr);
+		new_ptr = block->ptr;
 	}
 	else
 		return (create_new_ptr(ptr, block->size, size));
+	pthread_mutex_unlock(&(g_mutex.mutex));
+	return (new_ptr);
 }

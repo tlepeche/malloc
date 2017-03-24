@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 16:38:59 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/23 18:32:10 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/03/24 18:17:27 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void					show_alloc_mem(void)
 	t_block		*tiny;
 	int			res;
 
+	pthread_mutex_lock(&(g_mutex.mutex));
 	res = 0;
 	mem = get_memory();
 	tiny = mem->tiny;
@@ -80,4 +81,5 @@ void					show_alloc_mem(void)
 		res += print_chain(tiny);
 	}
 	show_rest_mem(res, mem);
+	pthread_mutex_unlock(&(g_mutex.mutex));
 }
