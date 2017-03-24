@@ -6,7 +6,7 @@
 /*   By: tlepeche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/01 16:57:31 by tlepeche          #+#    #+#             */
-/*   Updated: 2017/02/22 16:52:58 by tlepeche         ###   ########.fr       */
+/*   Updated: 2017/03/24 18:19:32 by tlepeche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,13 @@
 # include <stdio.h>
 # include <sys/resource.h>
 # include <libft.h>
+# include <pthread.h>
 
 # define TINY_MAX	getpagesize() / 64
 # define TINY_SIZE	getpagesize() * 2
 
 # define SMALL_MAX	getpagesize() / 4
-# define SMALL_SIZE	getpagesize() * 32 
+# define SMALL_SIZE	getpagesize() * 32
 
 # define TINY		1
 # define SMALL		2
@@ -43,6 +44,13 @@ typedef	struct		s_memory
 	t_block			*small;
 	t_block			*large;
 }					t_memory;
+
+typedef struct		s_mutex
+{
+	pthread_mutex_t	mutex;
+}					t_mutex;
+
+extern	t_mutex		g_mutex;
 
 void				*malloc(size_t size);
 void				free(void	*ptr);
